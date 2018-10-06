@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LF2BitConverter", "LF2BitConverter\LF2BitConverter.csproj", "{71307A68-164B-4A75-AA6C-C5BBB1F5A09E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{C91AF2CD-D506-4445-9548-B414F8E85638}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{71307A68-164B-4A75-AA6C-C5BBB1F5A09E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71307A68-164B-4A75-AA6C-C5BBB1F5A09E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71307A68-164B-4A75-AA6C-C5BBB1F5A09E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C91AF2CD-D506-4445-9548-B414F8E85638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C91AF2CD-D506-4445-9548-B414F8E85638}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C91AF2CD-D506-4445-9548-B414F8E85638}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C91AF2CD-D506-4445-9548-B414F8E85638}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
