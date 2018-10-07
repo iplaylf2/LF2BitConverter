@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LF2BitConverter\LF2BitConverter.csproj" />
+  </ItemGroup>
+
 </Project>

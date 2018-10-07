@@ -23,20 +23,20 @@ namespace LF2BitConverter
             ToObjectDelegate = (ToObjectDelegate<T>)toObject;
         }
 
-        public Byte[] GetBytes(T value)
+        public Byte[] GetBytes(T obj)
         {
-            return GetBytesDelegate(value);
+            return GetBytesDelegate(obj);
         }
 
-        public T ToObject(Byte[] value, ref Int32 startIndex)
+        public T ToObject(Byte[] bytes, ref Int32 startIndex)
         {
-            return ToObjectDelegate(value, ref startIndex);
+            return ToObjectDelegate(bytes, ref startIndex);
         }
 
         private readonly GetBytesDelegate<T> GetBytesDelegate;
         private readonly ToObjectDelegate<T> ToObjectDelegate;
     }
 
-    delegate Byte[] GetBytesDelegate<T>(T value);
-    delegate T ToObjectDelegate<T>(Byte[] value, ref Int32 startIndex);
+    delegate Byte[] GetBytesDelegate<T>(T obj);
+    delegate T ToObjectDelegate<T>(Byte[] bytes, ref Int32 startIndex);
 }

@@ -2,39 +2,77 @@
 using System.Reflection;
 using System.Linq;
 using LF2BitConverter.ConvertMemberAttributeNS;
-using LF2BitConverter.ConvertMemberNS;
+using System.Linq.Expressions;
+using LF2BitConverter.ExpressionGenerator;
+using System.Collections.Generic;
 
 namespace LF2BitConverter.Builder
 {
     class ConverterBuilder
     {
-        public GetBytesGenerator LittleEndianGetBytes { get; }
-        public GetBytesGenerator BigEndianGetBytes { get; }
-        public ToObjectGenerator LittleEndianToObject { get; }
-        public ToObjectGenerator BigEndianToObject { get; }
-
         public ConverterBuilder(Type type, ConverterBuilderAssistant assistant)
         {
             ConvertType = type;
             Assistant = assistant;
-            var convertMembers = ConvertMemberAnalyse();
-            LittleEndianGetBytes = new GetBytesGenerator(type, convertMembers, Assistant, true);
-            BigEndianGetBytes = new GetBytesGenerator(type, convertMembers, Assistant, false);
-            LittleEndianToObject = new ToObjectGenerator(type, convertMembers, Assistant, true);
-            BigEndianToObject = new ToObjectGenerator(type, convertMembers, Assistant, false);
+            ConvertMemberArray = ConvertMemberAnalyse();
         }
 
         public ConverterUint Build(Boolean littleEndian)
         {
             return new ConverterUint
             {
-                GetBytes = BuildGetBytes(littleEndian),
-                ToObject = BuildToObejct(littleEndian)
+                GetBytes = GetOrCreateGetBytes(littleEndian).Compile(),
+                //ToObject = GetOrCreateToObject(littleEndian).Compile()
             };
+        }
+
+        public LambdaExpression GetOrCreateGetBytes(Boolean littleEndian)
+        {
+            if (littleEndian)
+            {
+                if (LittleEndianGetBytes == null)
+                {
+                    LittleEndianGetBytes = CreateGetBytes(littleEndian);
+                }
+                return LittleEndianGetBytes;
+            }
+            else
+            {
+                if (BigEndianGetBytes == null)
+                {
+                    BigEndianGetBytes = CreateGetBytes(littleEndian);
+                }
+                return BigEndianGetBytes;
+            }
+        }
+
+        public LambdaExpression GetOrCreateToObject(Boolean littleEndian)
+        {
+            if (littleEndian)
+            {
+                if (LittleEndianToObject == null)
+                {
+                    LittleEndianToObject = CreateToObject(littleEndian);
+                }
+                return LittleEndianToObject;
+            }
+            else
+            {
+                if (BigEndianToObject == null)
+                {
+                    BigEndianToObject = CreateToObject(littleEndian);
+                }
+                return BigEndianToObject;
+            }
         }
 
         private readonly Type ConvertType;
         private readonly ConverterBuilderAssistant Assistant;
+        private readonly ConvertMember[] ConvertMemberArray;
+        private LambdaExpression LittleEndianGetBytes;
+        private LambdaExpression BigEndianGetBytes;
+        private LambdaExpression LittleEndianToObject;
+        private LambdaExpression BigEndianToObject;
 
         private ConvertMember[] ConvertMemberAnalyse()
         {
@@ -50,34 +88,144 @@ namespace LF2BitConverter.Builder
                             default:
                                 return false;
                         }
-                    });
-            var convertMembers = validMembers.Select(member =>
+                    }).ToArray();
+            foreach (var member in validMembers)
             {
-                var convertMemberAttribute = member.GetCustomAttribute<ConvertMemberAttribute>();
-                if (convertMemberAttribute == null)
+                switch (member)
                 {
-                    return new NormalConvertAttribute().Analyse(member);
+                    case PropertyInfo property:
+                        Assistant.CheckCycle(property.PropertyType);
+                        break;
+                    case FieldInfo field:
+                        Assistant.CheckCycle(field.FieldType);
+                        break;
+                    default:
+                        break;
+
                 }
-                else
-                {
-                    return convertMemberAttribute.Analyse(member);
-                }
-            });
-            foreach (var member in convertMembers.Where(m => !m.IsPrimitive))
-            {
-                Assistant.CheckCycle(member.OrginType);
             }
-            return convertMembers.ToArray();
+            return validMembers.Select(member => new ConvertMember(member, Assistant)).ToArray();
         }
 
-        private Delegate BuildGetBytes(Boolean littleEndian)
+        private LambdaExpression CreateGetBytes(Boolean littleEndian)
         {
-            return (littleEndian ? LittleEndianGetBytes : BigEndianGetBytes).GetOrCreateExpression().Compile();
+            var obj = Expression.Parameter(ConvertType);
+
+            var context = new GeneratorContext
+            {
+                Assignment = new List<(string, BinaryExpression)>(),
+                Pretreatment = new List<Expression>(),
+                VariableMap = new Dictionary<string, ParameterExpression>()
+            };
+
+            foreach (var member in ConvertMemberArray)
+            {
+                var memberVariable = Expression.Variable(typeof(Byte[]));
+                context.VariableMap.Add(member.Name, memberVariable);
+
+                var memberValue = Expression.PropertyOrField(obj, member.Name);
+                var bytes = member.CreateGetBytes(memberValue, littleEndian, context);
+                var assign = Expression.Assign(memberVariable, bytes);
+                context.Assignment.Add((member.Name, assign));
+            }
+
+            foreach (var member in ConvertMemberArray)
+            {
+                member.AfterCreateGetBytes(context);
+            }
+
+            var bytesResult = Expression.Variable(typeof(Byte[]));
+            var index = Expression.Variable(typeof(Int32));
+
+            var orderMembers = ConvertMemberArray.Select(member => context.VariableMap[member.Name]).ToArray();
+
+            var length = orderMembers.Aggregate((Expression)Expression.Constant(0),
+                (sum, member) =>
+                Expression.Add(
+                    sum,
+                    Expression.Property(member, nameof(Array.Length))));
+
+            var merge = Expression.Block(
+                new[] { bytesResult, index },
+                new Expression[]
+                {
+                    Expression.Assign(
+                        bytesResult,
+                        Expression.NewArrayBounds(typeof(Byte),length))
+                }.Concat(orderMembers.Select(member =>
+                Expression.Block(
+                    Expression.Call(member, nameof(Array.CopyTo), null, bytesResult, index),
+                    Expression.AddAssign(
+                        index,
+                        Expression.Property(member, nameof(Array.Length)))))
+                 ).Concat(new[]
+                 {
+                     bytesResult
+                 }));
+
+            return Expression.Lambda(
+                typeof(GetBytesDelegate<>).MakeGenericType(ConvertType),
+                Expression.Block(
+                    context.VariableMap.Values,
+                    context.Pretreatment
+                    .Concat(context.Assignment.Select(assign => assign.Item2))
+                    .Concat(new[] { merge })),
+                obj);
         }
 
-        private Delegate BuildToObejct(Boolean littleEndian)
+        private LambdaExpression CreateToObject(Boolean littleEndian)
         {
-            return (littleEndian ? LittleEndianToObject : BigEndianToObject).GetOrCreateExpression().Compile();
+            var bytes = Expression.Parameter(typeof(Byte[]));
+            var startIndex = Expression.Parameter(typeof(Int32).MakeByRefType());
+
+            var context = new GeneratorContext
+            {
+                Assignment = new List<(string, BinaryExpression)>(),
+                Pretreatment = new List<Expression>(),
+                VariableMap = new Dictionary<string, ParameterExpression>()
+            };
+
+            foreach (var member in ConvertMemberArray)
+            {
+                var memberVariable = Expression.Variable(member.Type);
+                context.VariableMap.Add(member.Name, memberVariable);
+
+                var obj = member.CreateToObject(bytes, startIndex, littleEndian, context);
+                var assign = Expression.Assign(memberVariable, obj);
+                context.Assignment.Add((member.Name, assign));
+            }
+
+            foreach (var member in ConvertMemberArray)
+            {
+                member.AfterToObject(context);
+            }
+
+            var objectResult = Expression.Variable(ConvertType);
+
+            var merge = Expression.Block(
+                new[] { objectResult },
+                new Expression[]
+                {
+                    Expression.Assign(objectResult,Expression.New(ConvertType))
+                }.Concat(
+                ConvertMemberArray.Select(member =>
+                Expression.Assign(
+                    Expression.PropertyOrField(objectResult, member.Name),
+                    context.VariableMap[member.Name])
+                )
+                ).Concat(new[]
+                {
+                    objectResult
+                }));
+
+            return Expression.Lambda(
+                typeof(ToObjectDelegate<>).MakeGenericType(ConvertType),
+                Expression.Block(
+                    context.VariableMap.Values,
+                    context.Pretreatment
+                    .Concat(context.Assignment.Select(assign => assign.Item2))
+                    .Concat(new[] { merge })),
+               bytes, startIndex);
         }
     }
 }

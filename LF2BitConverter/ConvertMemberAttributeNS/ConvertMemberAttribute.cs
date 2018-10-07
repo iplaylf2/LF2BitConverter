@@ -1,18 +1,35 @@
-﻿using LF2BitConverter.Builder;
-using LF2BitConverter.ConvertMemberNS;
+﻿using LF2BitConverter.ExpressionGenerator;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
 namespace LF2BitConverter.ConvertMemberAttributeNS
 {
-    public abstract class ConvertMemberAttribute : Attribute
+    public class ConvertMemberAttribute : Attribute
     {
-        protected ConvertMemberAttribute()
+        public virtual Type OnGetConvertType(ConvertMember member, Type lastResult)
+        {
+            return lastResult;
+        }
+
+        public virtual Boolean OnGetLittleEndian(ConvertMember member, Boolean lastResult)
+        {
+            return lastResult;
+        }
+
+        public virtual Expression OnCreateGetBytes(ConvertMember member, Type convertType, Expression value, Boolean littleEndian, GeneratorContext context, Expression lastResult)
+        {
+            return lastResult;
+        }
+
+        public virtual void AfterCreateGetBytes(ConvertMember member, GeneratorContext context)
         {
         }
 
-        internal abstract ConvertMember Analyse(MemberInfo member);
+        public virtual void AfterToObject(ConvertMember member, GeneratorContext context)
+        {
+        }
     }
 }

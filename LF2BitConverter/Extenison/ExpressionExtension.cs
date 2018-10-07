@@ -11,9 +11,9 @@ namespace LF2BitConverter.Extenison
         {
             var elementType = list.Type.GetElementType();
 
-            var item = Expression.Variable(elementType, "item");
-            var enumerator = Expression.Variable(typeof(IEnumerator<>).MakeGenericType(elementType), "enumerator");
-            var breakLabel = Expression.Label("loopBreak");
+            var item = Expression.Variable(elementType);
+            var enumerator = Expression.Variable(typeof(IEnumerator<>).MakeGenericType(elementType));
+            var breakLabel = Expression.Label();
 
             return Expression.Block(
                 //var enumerator;
