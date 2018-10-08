@@ -6,37 +6,48 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
 {
     public class ConvertMemberAttribute : Attribute
     {
-        public virtual Type OnGetConvertType(ConvertMember member, Type lastResult)
+        public ConvertMemberAttribute()
+        {
+        }
+
+        public virtual Type OnGetConvertType(Type lastResult)
         {
             return lastResult;
         }
 
-        public virtual Boolean OnGetLittleEndian(ConvertMember member, Boolean lastResult)
+        public virtual Boolean OnGetLittleEndian(Boolean lastResult)
         {
             return lastResult;
         }
 
-        public virtual Expression OnCreateGetBytes(ConvertMember member, Expression value, Boolean littleEndian, GeneratorContext context, Expression lastResult)
+        public virtual Expression OnCreateGetBytes(Expression value, Boolean littleEndian, GeneratorContext context, Expression lastResult)
         {
             return lastResult;
         }
 
-        public virtual void AfterCreateGetBytes(ConvertMember member, GeneratorContext context)
+        public virtual void AfterCreateGetBytes(GeneratorContext context)
         {
         }
 
-        public virtual Func<Expression, LoopExpression> OnGetLoopController(ConvertMember member, ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, GeneratorContext context, Func<Expression, LoopExpression> result)
+        public virtual Func<Expression, LoopExpression> OnGetLoopController(ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, GeneratorContext context, Func<Expression, LoopExpression> lastResult)
         {
-            return result;
+            return lastResult;
         }
 
-        public virtual Expression OnCreateToObject(ConvertMember member, ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, GeneratorContext context, Expression result)
+        public virtual Expression OnCreateToObject(ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, GeneratorContext context, Expression lastResult)
         {
-            return result;
+            return lastResult;
         }
 
-        public virtual void AfterToObject(ConvertMember member, GeneratorContext context)
+        public virtual void AfterToObject(GeneratorContext context)
         {
         }
+
+        internal void SetConvertMember(ConvertMember member)
+        {
+            Member = member;
+        }
+
+        private ConvertMember Member;
     }
 }
