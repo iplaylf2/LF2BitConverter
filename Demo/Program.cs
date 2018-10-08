@@ -43,12 +43,12 @@ namespace Demo
         [Ignore]
         public Foo A;
         public Int32 B;
-        [ConvertArray(CountBy.Byte, LengthFrom = nameof(B))]
+        [ConvertArray(CountBy.Item, LengthFrom = nameof(B))]
         public Foo[] C;
         [ConvertArray(CountBy.Item, Length = 4)]
         public Int32[] D;
         [ConvertAs(typeof(Byte))]
-        [ConvertArray(CountBy.Item, Length = 2)]
+        [ConvertArray(CountBy.Byte, Length = 2)]
         public Bar[] E;
     }
 
