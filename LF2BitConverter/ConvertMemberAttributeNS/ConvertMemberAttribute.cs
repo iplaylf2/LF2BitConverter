@@ -48,6 +48,6 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             Member = member;
         }
 
-        private ConvertMember Member;
+        protected ConvertMember Member;
     }
 }

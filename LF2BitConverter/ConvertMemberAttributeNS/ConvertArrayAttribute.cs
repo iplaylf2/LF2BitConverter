@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
+using LF2BitConverter.ExpressionGenerator;
 
 namespace LF2BitConverter.ConvertMemberAttributeNS
 {
@@ -13,6 +15,10 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
         public ConvertArrayAttribute(CountBy countBy)
         {
             CountBy = CountBy;
+        }
+
+        public override void AfterCreateGetBytes(GeneratorContext context)
+        {
         }
     }
 
