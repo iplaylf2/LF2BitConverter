@@ -15,12 +15,12 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             return lastResult;
         }
 
-        public virtual Boolean OnGetLittleEndian(Boolean lastResult)
+        public virtual Endian OnGetEndian(Endian lastResult)
         {
             return lastResult;
         }
 
-        public virtual Expression OnCreateGetBytes(ParameterExpression obj, Boolean littleEndian, GeneratorContext context, Expression lastResult)
+        public virtual Expression OnCreateGetBytes(ParameterExpression obj, GeneratorContext context, Expression lastResult)
         {
             return lastResult;
         }
@@ -29,12 +29,12 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
         {
         }
 
-        public virtual Func<Expression, LoopExpression> OnGetLoopController(ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, GeneratorContext context, Func<Expression, LoopExpression> lastResult)
+        public virtual Func<Expression, LoopExpression> OnGetLoopController(ParameterExpression bytes, ParameterExpression startIndex, GeneratorContext context, Func<Expression, LoopExpression> lastResult)
         {
             return lastResult;
         }
 
-        public virtual Expression OnCreateToObject(ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, GeneratorContext context, Expression lastResult)
+        public virtual Expression OnCreateToObject(ParameterExpression bytes, ParameterExpression startIndex, GeneratorContext context, Expression lastResult)
         {
             return lastResult;
         }

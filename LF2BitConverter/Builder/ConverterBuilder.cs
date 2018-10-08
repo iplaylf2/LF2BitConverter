@@ -112,6 +112,7 @@ namespace LF2BitConverter.Builder
 
             var context = new GeneratorContext
             {
+                LittleEndian = littleEndian,
                 MemberResult = new List<(string, Expression)>(),
                 Pretreatment = new List<Expression>(),
                 VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, _ => Expression.Variable(typeof(Byte[]))),
@@ -120,7 +121,7 @@ namespace LF2BitConverter.Builder
 
             foreach (var member in ConvertMemberArray)
             {
-                var bytes = member.CreateGetBytes(obj, littleEndian, context);
+                var bytes = member.CreateGetBytes(obj, context);
                 context.MemberResult.Add((member.Name, bytes));
             }
 
@@ -180,6 +181,7 @@ namespace LF2BitConverter.Builder
 
             var context = new GeneratorContext
             {
+                LittleEndian = littleEndian,
                 MemberResult = new List<(string, Expression)>(),
                 Pretreatment = new List<Expression>(),
                 VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, member => Expression.Variable(member.Type)),
@@ -188,7 +190,7 @@ namespace LF2BitConverter.Builder
 
             foreach (var member in ConvertMemberArray)
             {
-                var obj = member.CreateToObject(bytes, startIndex, littleEndian, context);
+                var obj = member.CreateToObject(bytes, startIndex, context);
                 context.MemberResult.Add((member.Name, obj));
             }
 
