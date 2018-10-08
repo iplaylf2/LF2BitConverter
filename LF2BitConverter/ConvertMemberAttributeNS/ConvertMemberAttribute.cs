@@ -20,7 +20,7 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             return lastResult;
         }
 
-        public virtual Expression OnCreateGetBytes(Expression value, Boolean littleEndian, GeneratorContext context, Expression lastResult)
+        public virtual Expression OnCreateGetBytes(ParameterExpression value, Boolean littleEndian, GeneratorContext context, Expression lastResult)
         {
             return lastResult;
         }

@@ -139,9 +139,19 @@ namespace LF2BitConverter.ExpressionGenerator
         {
             littleEndian = ConvertMemberAttributeArray.Aggregate(littleEndian, (result, attribute) => attribute.OnGetLittleEndian(result));
 
-            var bytes = CreateGetBytes(ConvertType, value, littleEndian);
+            var valueVariable = Expression.Variable(value.Type);
 
-            return ConvertMemberAttributeArray.Aggregate(bytes, (result, attribute) => attribute.OnCreateGetBytes(value, littleEndian, context, result));
+            var bytes = CreateGetBytes(ConvertType, valueVariable, littleEndian);
+
+            var bytesResult= ConvertMemberAttributeArray.Aggregate(bytes, (result, attribute) => attribute.OnCreateGetBytes(valueVariable, littleEndian, context, result));
+
+            return Expression.Block(
+                new[] { valueVariable },
+                new[]
+                {
+                    Expression.Assign(valueVariable,value),
+                    bytesResult
+                });
         }
 
         internal void AfterCreateGetBytes(GeneratorContext context)

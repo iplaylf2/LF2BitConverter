@@ -17,9 +17,23 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             CountBy = CountBy;
         }
 
+        public override Expression OnCreateGetBytes(ParameterExpression value, bool littleEndian, GeneratorContext context, Expression lastResult)
+        {
+            if (String.IsNullOrEmpty(LengthFrom) && CountBy == CountBy.Item)
+            {
+                var count = Expression.Variable(typeof(Int32));
+                context.VariableMap.Add(ItemCountInGetBytesKey, count);
+            }
+            return lastResult;
+        }
+
         public override void AfterCreateGetBytes(GeneratorContext context)
         {
         }
+
+        private Expression ItemCountInGetBytes;
+        private String ItemCountInGetBytesKey = Guid.NewGuid().ToString();
+
     }
 
     public enum CountBy
