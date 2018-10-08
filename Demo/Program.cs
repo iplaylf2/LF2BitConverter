@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Linq;
 using LF2BitConverter;
+using LF2BitConverter.ConvertMemberAttributeNS;
 
 namespace Demo
 {
@@ -36,16 +34,19 @@ namespace Demo
             };
             var byets = BitConverterEX.LittleEndian.GetBytes(mock);
             var index = 0;
-            var obj = BitConverterEX.LittleEndian.ToObject<Mock>(byets,ref index);
+            var obj = BitConverterEX.LittleEndian.ToObject<Mock>(byets, ref index);
         }
     }
 
     class Mock
     {
+        [Ignore]
         public Foo A;
         public Int32 B;
+        [ConvertArray(CountBy.Item,LengthFrom =nameof(B))]
         public Foo[] C;
         public Int32[] D;
+        [ConvertAs(typeof(Byte))]
         public Bar E;
     }
 
