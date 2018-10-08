@@ -114,7 +114,8 @@ namespace LF2BitConverter.Builder
             {
                 Assignment = new List<(string, BinaryExpression)>(),
                 Pretreatment = new List<Expression>(),
-                VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, _ => Expression.Variable(typeof(Byte[])))
+                VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, _ => Expression.Variable(typeof(Byte[]))),
+                MemberArray = ConvertMemberArray
             };
 
             foreach (var member in ConvertMemberArray)
@@ -133,13 +134,14 @@ namespace LF2BitConverter.Builder
             var bytesResult = Expression.Variable(typeof(Byte[]));
             var index = Expression.Variable(typeof(Int32));
 
-            var orderMembers = ConvertMemberArray.Select(member => context.VariableMap[member.Name]).ToArray();
+            var assignmentMembers = context.Assignment.Select(item => item.Item1).ToArray();
 
-            var length = orderMembers.Aggregate((Expression)Expression.Constant(0),
+            var length = assignmentMembers
+                .Aggregate((Expression)Expression.Constant(0),
                 (sum, member) =>
                 Expression.Add(
                     sum,
-                    Expression.Property(member, nameof(Array.Length))));
+                    Expression.Property(context.VariableMap[member], nameof(Array.Length))));
 
             var merge = Expression.Block(
                 new[] { bytesResult, index },
@@ -151,12 +153,13 @@ namespace LF2BitConverter.Builder
                     Expression.Assign(
                         index,
                         Expression.Constant(0))
-                }.Concat(orderMembers.Select(member =>
-                Expression.Block(
-                    Expression.Call(member, nameof(Array.CopyTo), null, bytesResult, index),
-                    Expression.AddAssign(
-                        index,
-                        Expression.Property(member, nameof(Array.Length)))))
+                }.Concat(assignmentMembers.Select(
+                    member =>
+                    Expression.Block(
+                        Expression.Call(context.VariableMap[member], nameof(Array.CopyTo), null, bytesResult, index),
+                        Expression.AddAssign(
+                            index,
+                            Expression.Property(context.VariableMap[member], nameof(Array.Length)))))
                  ).Concat(new[]
                  {
                      bytesResult
@@ -181,7 +184,8 @@ namespace LF2BitConverter.Builder
             {
                 Assignment = new List<(string, BinaryExpression)>(),
                 Pretreatment = new List<Expression>(),
-                VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, member => Expression.Variable(member.Type))
+                VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, member => Expression.Variable(member.Type)),
+                MemberArray = ConvertMemberArray
             };
 
             foreach (var member in ConvertMemberArray)
@@ -198,17 +202,19 @@ namespace LF2BitConverter.Builder
 
             var objectResult = Expression.Variable(ConvertType);
 
+            var assignmentMembers = context.Assignment.Select(item => item.Item1).ToArray();
+
             var merge = Expression.Block(
                 new[] { objectResult },
                 new Expression[]
                 {
                     Expression.Assign(objectResult,Expression.New(ConvertType))
                 }.Concat(
-                ConvertMemberArray.Select(member =>
-                Expression.Assign(
-                    Expression.PropertyOrField(objectResult, member.Name),
-                    context.VariableMap[member.Name])
-                )
+                assignmentMembers.Select(
+                    member =>
+                    Expression.Assign(
+                        Expression.PropertyOrField(objectResult, member),
+                        context.VariableMap[member]))
                 ).Concat(new[]
                 {
                     objectResult
