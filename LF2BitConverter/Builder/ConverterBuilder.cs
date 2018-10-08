@@ -112,7 +112,7 @@ namespace LF2BitConverter.Builder
 
             var context = new GeneratorContext
             {
-                Assignment = new List<(string, BinaryExpression)>(),
+                MemberResult = new List<(string, Expression)>(),
                 Pretreatment = new List<Expression>(),
                 VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, _ => Expression.Variable(typeof(Byte[]))),
                 MemberArray = ConvertMemberArray
@@ -122,8 +122,7 @@ namespace LF2BitConverter.Builder
             {
                 var memberValue = Expression.PropertyOrField(obj, member.Name);
                 var bytes = member.CreateGetBytes(memberValue, littleEndian, context);
-                var assign = Expression.Assign(context.VariableMap[member.Name], bytes);
-                context.Assignment.Add((member.Name, assign));
+                context.MemberResult.Add((member.Name, bytes));
             }
 
             foreach (var member in ConvertMemberArray)
@@ -134,7 +133,7 @@ namespace LF2BitConverter.Builder
             var bytesResult = Expression.Variable(typeof(Byte[]));
             var index = Expression.Variable(typeof(Int32));
 
-            var assignmentMembers = context.Assignment.Select(item => item.Item1).ToArray();
+            var assignmentMembers = context.MemberResult.Select(item => item.Item1).ToArray();
 
             var length = assignmentMembers
                 .Aggregate((Expression)Expression.Constant(0),
@@ -170,7 +169,7 @@ namespace LF2BitConverter.Builder
                 Expression.Block(
                     context.VariableMap.Values,
                     context.Pretreatment
-                    .Concat(context.Assignment.Select(assign => assign.Item2))
+                    .Concat(context.MemberResult.Select(result => Expression.Assign(context.VariableMap[result.Item1], result.Item2)))
                     .Concat(new[] { merge })),
                 obj);
         }
@@ -182,7 +181,7 @@ namespace LF2BitConverter.Builder
 
             var context = new GeneratorContext
             {
-                Assignment = new List<(string, BinaryExpression)>(),
+                MemberResult = new List<(string, Expression)>(),
                 Pretreatment = new List<Expression>(),
                 VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, member => Expression.Variable(member.Type)),
                 MemberArray = ConvertMemberArray
@@ -191,8 +190,7 @@ namespace LF2BitConverter.Builder
             foreach (var member in ConvertMemberArray)
             {
                 var obj = member.CreateToObject(bytes, startIndex, littleEndian, context);
-                var assign = Expression.Assign(context.VariableMap[member.Name], obj);
-                context.Assignment.Add((member.Name, assign));
+                context.MemberResult.Add((member.Name, obj));
             }
 
             foreach (var member in ConvertMemberArray)
@@ -202,7 +200,7 @@ namespace LF2BitConverter.Builder
 
             var objectResult = Expression.Variable(ConvertType);
 
-            var assignmentMembers = context.Assignment.Select(item => item.Item1).ToArray();
+            var assignmentMembers = context.MemberResult.Select(item => item.Item1).ToArray();
 
             var merge = Expression.Block(
                 new[] { objectResult },
@@ -225,7 +223,7 @@ namespace LF2BitConverter.Builder
                 Expression.Block(
                     context.VariableMap.Values,
                     context.Pretreatment
-                    .Concat(context.Assignment.Select(assign => assign.Item2))
+                    .Concat(context.MemberResult.Select(result => Expression.Assign(context.VariableMap[result.Item1], result.Item2)))
                     .Concat(new[] { merge })),
                bytes, startIndex);
         }

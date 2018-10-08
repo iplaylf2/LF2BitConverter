@@ -9,7 +9,7 @@ namespace LF2BitConverter.ExpressionGenerator
     {
         public Dictionary<String, ParameterExpression> VariableMap;
         public List<Expression> Pretreatment;
-        public List<(String, BinaryExpression)> Assignment;
+        public List<(String, Expression)> MemberResult;
         public ConvertMember[] MemberArray;
     }
 }

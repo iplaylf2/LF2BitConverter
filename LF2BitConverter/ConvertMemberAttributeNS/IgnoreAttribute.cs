@@ -9,14 +9,14 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
     {
         public override void AfterCreateGetBytes(GeneratorContext context)
         {
-            var assgin = context.Assignment.Find(item => item.Item1 == Member.Name);
-            context.Assignment.Remove(assgin);
+            var assgin = context.MemberResult.Find(item => item.Item1 == Member.Name);
+            context.MemberResult.Remove(assgin);
         }
 
         public override void AfterToObject( GeneratorContext context)
         {
-            var assgin = context.Assignment.Find(item => item.Item1 == Member.Name);
-            context.Assignment.Remove(assgin);
+            var assgin = context.MemberResult.Find(item => item.Item1 == Member.Name);
+            context.MemberResult.Remove(assgin);
         }
     }
 }
