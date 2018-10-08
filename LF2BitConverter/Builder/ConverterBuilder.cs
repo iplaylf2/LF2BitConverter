@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Linq;
-using LF2BitConverter.ConvertMemberAttributeNS;
 using System.Linq.Expressions;
 using LF2BitConverter.ExpressionGenerator;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ namespace LF2BitConverter.Builder
             return new ConverterUint
             {
                 GetBytes = GetOrCreateGetBytes(littleEndian).Compile(),
-                //ToObject = GetOrCreateToObject(littleEndian).Compile()
+                ToObject = GetOrCreateToObject(littleEndian).Compile()
             };
         }
 
@@ -115,17 +114,14 @@ namespace LF2BitConverter.Builder
             {
                 Assignment = new List<(string, BinaryExpression)>(),
                 Pretreatment = new List<Expression>(),
-                VariableMap = new Dictionary<string, ParameterExpression>()
+                VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, _ => Expression.Variable(typeof(Byte[])))
             };
 
             foreach (var member in ConvertMemberArray)
             {
-                var memberVariable = Expression.Variable(typeof(Byte[]));
-                context.VariableMap.Add(member.Name, memberVariable);
-
                 var memberValue = Expression.PropertyOrField(obj, member.Name);
                 var bytes = member.CreateGetBytes(memberValue, littleEndian, context);
-                var assign = Expression.Assign(memberVariable, bytes);
+                var assign = Expression.Assign(context.VariableMap[member.Name], bytes);
                 context.Assignment.Add((member.Name, assign));
             }
 
@@ -185,16 +181,13 @@ namespace LF2BitConverter.Builder
             {
                 Assignment = new List<(string, BinaryExpression)>(),
                 Pretreatment = new List<Expression>(),
-                VariableMap = new Dictionary<string, ParameterExpression>()
+                VariableMap = ConvertMemberArray.ToDictionary(member => member.Name, member => Expression.Variable(member.Type))
             };
 
             foreach (var member in ConvertMemberArray)
             {
-                var memberVariable = Expression.Variable(member.Type);
-                context.VariableMap.Add(member.Name, memberVariable);
-
                 var obj = member.CreateToObject(bytes, startIndex, littleEndian, context);
-                var assign = Expression.Assign(memberVariable, obj);
+                var assign = Expression.Assign(context.VariableMap[member.Name], obj);
                 context.Assignment.Add((member.Name, assign));
             }
 

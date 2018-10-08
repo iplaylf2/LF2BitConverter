@@ -4,7 +4,8 @@ using System.Text;
 
 namespace LF2BitConverter.ConvertMemberAttributeNS
 {
-    class IgnoreAttribute : ConvertMemberAttribute
+    public class IgnoreAttribute : ConvertMemberAttribute
     {
+
     }
 }

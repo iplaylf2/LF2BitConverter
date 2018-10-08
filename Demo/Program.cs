@@ -34,7 +34,9 @@ namespace Demo
                 D = new[] { 7, 8, 9, 10 },
                 E = Bar.B
             };
-            var byets = BitConverterEX.BigEndian.GetBytes(mock);
+            var byets = BitConverterEX.LittleEndian.GetBytes(mock);
+            var index = 0;
+            var obj = BitConverterEX.LittleEndian.ToObject<Mock>(byets,ref index);
         }
     }
 
