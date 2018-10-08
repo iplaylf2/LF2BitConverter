@@ -31,9 +31,10 @@ namespace Demo
                         B=7
                     }
                 },
-                D = new[] { 7, 8, 9, 10 }
+                D = new[] { 7, 8, 9, 10 },
+                E = Bar.B
             };
-            var byets = BitConverterEX.LittleEndian.GetBytes(mock);
+            var byets = BitConverterEX.BigEndian.GetBytes(mock);
         }
     }
 
@@ -43,11 +44,17 @@ namespace Demo
         public Int32 B;
         public Foo[] C;
         public Int32[] D;
+        public Bar E;
     }
 
     class Foo
     {
         public Int32 A;
         public Int32 B;
+    }
+
+    enum Bar
+    {
+        A, B
     }
 }

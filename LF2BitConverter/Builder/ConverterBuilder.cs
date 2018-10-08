@@ -151,7 +151,10 @@ namespace LF2BitConverter.Builder
                 {
                     Expression.Assign(
                         bytesResult,
-                        Expression.NewArrayBounds(typeof(Byte),length))
+                        Expression.NewArrayBounds(typeof(Byte),length)),
+                    Expression.Assign(
+                        index,
+                        Expression.Constant(0))
                 }.Concat(orderMembers.Select(member =>
                 Expression.Block(
                     Expression.Call(member, nameof(Array.CopyTo), null, bytesResult, index),

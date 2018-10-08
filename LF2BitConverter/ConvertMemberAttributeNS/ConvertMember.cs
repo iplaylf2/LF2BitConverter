@@ -32,6 +32,9 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
                          {
                              Expression.Assign(valueVariable,value),
                              Expression.Assign(
+                                 index,
+                                 Expression.Constant(0)),
+                             Expression.Assign(
                                  bytesResult,
                                  Expression.NewArrayBounds(
                                      typeof(Byte),
