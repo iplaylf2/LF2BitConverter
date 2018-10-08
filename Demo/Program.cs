@@ -30,7 +30,7 @@ namespace Demo
                     }
                 },
                 D = new[] { 7, 8, 9, 10 },
-                E = Bar.B
+                E = new[] { Bar.A, Bar.B }
             };
             var byets = BitConverterEX.LittleEndian.GetBytes(mock);
             var index = 0;
@@ -43,11 +43,13 @@ namespace Demo
         [Ignore]
         public Foo A;
         public Int32 B;
-        [ConvertArray(CountBy.Item,LengthFrom =nameof(B))]
+        [ConvertArray(CountBy.Byte, LengthFrom = nameof(B))]
         public Foo[] C;
+        [ConvertArray(CountBy.Item, Length = 4)]
         public Int32[] D;
         [ConvertAs(typeof(Byte))]
-        public Bar E;
+        [ConvertArray(CountBy.Item, Length = 2)]
+        public Bar[] E;
     }
 
     class Foo

@@ -72,7 +72,78 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             }
         }
 
-        private String ItemCountInGetBytes = new Guid().ToString();
+        public override Func<Expression, Expression> OnGetLoopController(ParameterExpression bytes, ParameterExpression startIndex, GeneratorContext context, Func<Expression, Expression> lastResult)
+        {
+            var loopBreak = Expression.Label();
+            if (CountBy == CountBy.Byte)
+            {
+                var limitVariable = Expression.Variable(typeof(Int32));
+                Expression limit;
+                if (String.IsNullOrEmpty(LengthFrom))
+                {
+                    limit = Expression.Add(
+                        startIndex,
+                        Expression.Constant(Length));
+                }
+                else
+                {
+                    limit = Expression.Add(startIndex, context.VariableMap[LengthFrom]);
+                }
+
+                return body =>
+                    Expression.Block(
+                        new[] { limitVariable },
+                        new Expression[]
+                        {
+                            Expression.Assign(
+                                limitVariable,
+                                limit),
+                            Expression.Loop(
+                                Expression.IfThenElse(
+                                    Expression.Equal(startIndex,limitVariable),
+                                    Expression.Break(loopBreak),
+                                    body),
+                                loopBreak)
+                        });
+            }
+            else
+            {
+                var limitVariable = Expression.Variable(typeof(Int32));
+                var countVariable = Expression.Variable(typeof(Int32));
+                Expression limit;
+                if (String.IsNullOrEmpty(LengthFrom))
+                {
+                    limit = Expression.Constant(Length);
+                }
+                else
+                {
+                    limit = Expression.Convert(context.VariableMap[LengthFrom], typeof(Int32));
+                }
+
+                return body =>
+                Expression.Block(
+                    new[] { limitVariable, countVariable },
+                    new Expression[]
+                    {
+                        Expression.Assign(
+                            limitVariable,
+                            limit),
+                        Expression.Assign(
+                            countVariable,
+                            Expression.Constant(0)),
+                            Expression.Loop(
+                                Expression.IfThenElse(
+                                    Expression.Equal(countVariable,limitVariable),
+                                    Expression.Break(loopBreak),
+                                    Expression.Block(
+                                        body,
+                                        Expression.PostIncrementAssign(countVariable))),
+                                loopBreak)
+                    });
+            }
+        }
+
+        private readonly String ItemCountInGetBytes = new Guid().ToString();
 
     }
 

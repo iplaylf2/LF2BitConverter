@@ -29,7 +29,7 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
         {
         }
 
-        public virtual Func<Expression, LoopExpression> OnGetLoopController(ParameterExpression bytes, ParameterExpression startIndex, GeneratorContext context, Func<Expression, LoopExpression> lastResult)
+        public virtual Func<Expression, Expression> OnGetLoopController(ParameterExpression bytes, ParameterExpression startIndex, GeneratorContext context, Func<Expression, Expression> lastResult)
         {
             return lastResult;
         }

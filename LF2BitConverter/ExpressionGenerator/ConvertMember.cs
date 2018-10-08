@@ -91,7 +91,7 @@ namespace LF2BitConverter.ExpressionGenerator
             }
         }
 
-        public Expression CreateToObject(Type convertType, Type originType, ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, Func<Expression, LoopExpression> loopController)
+        public Expression CreateToObject(Type convertType, Type originType, ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, Func<Expression, Expression> loopController)
         {
             if (originType.IsArray)
             {
@@ -172,7 +172,7 @@ namespace LF2BitConverter.ExpressionGenerator
         internal Expression CreateToObject(ParameterExpression bytes, ParameterExpression startIndex, GeneratorContext context)
         {
             var loopBreak = Expression.Label();
-            Func<Expression, LoopExpression> loopController = (Expression block) => Expression.Loop(Expression.Break(loopBreak), loopBreak);
+            Func<Expression, Expression> loopController = (Expression block) => Expression.Loop(Expression.Break(loopBreak), loopBreak);
             loopController = ConvertMemberAttributeArray.Aggregate(loopController, (result, member) => member.OnGetLoopController(bytes, startIndex, context, result));
             var littleEndian = GetLittleEndian(context.LittleEndian);
             var obj = CreateToObject(ConvertType, Type, bytes, startIndex, littleEndian, loopController);
