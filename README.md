@@ -6,6 +6,6 @@ BitConverter的扩展版。用于自定义对象与Byte[]互转，支持大小�
 var bytes= BitConverterEX.LittleEndian.GetBytes(obj);
 
 var i=0;
-var newObj=BitConverterEX.BigEndian.ToObject<T>(bytes,ref i);
+var newObj=BitConverterEX.LittleEndian.ToObject<T>(bytes,ref i);
 ```
 更多demo在demo文件夹
