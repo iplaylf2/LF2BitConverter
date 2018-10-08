@@ -120,8 +120,7 @@ namespace LF2BitConverter.Builder
 
             foreach (var member in ConvertMemberArray)
             {
-                var memberValue = Expression.PropertyOrField(obj, member.Name);
-                var bytes = member.CreateGetBytes(memberValue, littleEndian, context);
+                var bytes = member.CreateGetBytes(obj, littleEndian, context);
                 context.MemberResult.Add((member.Name, bytes));
             }
 
