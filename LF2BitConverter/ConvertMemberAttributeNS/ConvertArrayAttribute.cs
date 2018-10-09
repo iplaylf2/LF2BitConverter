@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using LF2BitConverter.ExpressionGenerator;
@@ -40,6 +41,7 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             var littleEndian = Member.GetLittleEndian(context.LittleEndian);
             if (!String.IsNullOrEmpty(LengthFrom))
             {
+                Expression length;
                 if (CountBy == CountBy.Byte)
                 {
                     var myIndex = context.MemberResult.FindIndex(item => item.Item1 == Member.Name);
@@ -51,24 +53,21 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
                             context.MemberResult[myIndex].Item2));
                     context.MemberResult[myIndex] = (Member.Name, mineVariable);
 
-                    var length = Expression.Property(
-                        mineVariable,
-                        nameof(Array.Length));
-                    var lengthIndex = context.MemberResult.FindIndex(item => item.Item1 == LengthFrom);
-                    context.MemberResult[lengthIndex] = (LengthFrom,
-                        Expression.Call(
-                            BitConverterSelector.SelectGetBytes(typeof(Int32), littleEndian),
-                            length));
+                    length = Expression.Property(
+                       mineVariable,
+                       nameof(Array.Length));
                 }
                 else
                 {
-                    var length = context.VariableMap[ItemCountInGetBytes];
-                    var index = context.MemberResult.FindIndex(item => item.Item1 == LengthFrom);
-                    context.MemberResult[index] = (LengthFrom,
-                        Expression.Call(
-                            BitConverterSelector.SelectGetBytes(typeof(Int32), littleEndian),
-                            length));
+                    length = context.VariableMap[ItemCountInGetBytes];
                 }
+
+                var lengthIndex = context.MemberResult.FindIndex(item => item.Item1 == LengthFrom);
+                var lengthMember = context.MemberArray.Single(member => member.Name == LengthFrom);
+                context.MemberResult[lengthIndex] = (
+                    LengthFrom,
+                    Member.CreateGetBytes(lengthMember.ConvertType, length, littleEndian)
+                    );
             }
         }
 
@@ -87,7 +86,11 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
                 }
                 else
                 {
-                    limit = Expression.Add(startIndex, context.VariableMap[LengthFrom]);
+                    limit = Expression.Add(
+                        startIndex,
+                        Expression.Convert(
+                            context.VariableMap[LengthFrom],
+                            typeof(Int32)));
                 }
 
                 return body =>

@@ -40,19 +40,19 @@ namespace Demo
 
     class Mock
     {
-        [Ignore]
+        [ConvertIgnore]
         public Foo A { get; set; }
 
         public Int32 B { get; set; }
 
-        [ConvertArray(CountBy.Item, LengthFrom = nameof(B))]
+        [ConvertArray(CountBy.Byte, LengthFrom = nameof(B))]
         public Foo[] C { get; set; }
 
         [ConvertArray(CountBy.Item, Length = 4)]
         public Int32[] D { get; set; }
 
         [ConvertAs(typeof(Byte))]
-        [ConvertArray(CountBy.Byte, Length = 2)]
+        [ConvertArray(CountBy.Item, Length = 2)]
         public Bar[] E { get; set; }
     }
 

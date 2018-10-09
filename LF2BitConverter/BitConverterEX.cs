@@ -11,14 +11,14 @@ namespace LF2BitConverter
 
         public Byte[] GetBytes<T>(T obj)
         {
-            var converter = ConverterService.GetConverter<T>();
-            return converter.GetBytes(obj);
+            var getBytes = ConverterService.GetGetBytes<T>();
+            return getBytes(obj);
         }
 
         public T ToObject<T>(Byte[] bytes, ref Int32 startIndex)
         {
-            var converter = ConverterService.GetConverter<T>();
-            return converter.ToObject(bytes, ref startIndex);
+            var toObject = ConverterService.GetToObject<T>();
+            return toObject(bytes, ref startIndex);
         }
 
         internal BitConverterEX(Boolean littleEndian)

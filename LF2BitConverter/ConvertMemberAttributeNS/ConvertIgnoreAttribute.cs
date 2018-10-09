@@ -5,7 +5,7 @@ using LF2BitConverter.ExpressionGenerator;
 
 namespace LF2BitConverter.ConvertMemberAttributeNS
 {
-    public class IgnoreAttribute : ConvertMemberAttribute
+    public class ConvertIgnoreAttribute : ConvertMemberAttribute
     {
         public override void AfterCreateGetBytes(GeneratorContext context)
         {

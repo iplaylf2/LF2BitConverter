@@ -16,13 +16,14 @@ namespace LF2BitConverter.Builder
             ConvertMemberArray = ConvertMemberAnalyse();
         }
 
-        public ConverterUint Build(Boolean littleEndian)
+        public Delegate BuildGetBytes(Boolean littleEndian)
         {
-            return new ConverterUint
-            {
-                GetBytes = GetOrCreateGetBytes(littleEndian).Compile(),
-                ToObject = GetOrCreateToObject(littleEndian).Compile()
-            };
+            return GetOrCreateGetBytes(littleEndian).Compile();
+        }
+
+        public Delegate BuildToObject(Boolean littleEndian)
+        {
+            return GetOrCreateToObject(littleEndian).Compile();
         }
 
         public LambdaExpression GetOrCreateGetBytes(Boolean littleEndian)

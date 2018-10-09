@@ -209,9 +209,9 @@ namespace LF2BitConverter.ExpressionGenerator
             if (convertType.IsPrimitive)
             {
                 Expression getBytes;
-                if (ConvertType == typeof(Byte))
+                if (convertType == typeof(Byte))
                 {
-                    getBytes = Expression.NewArrayInit(ConvertType, valueVariable);
+                    getBytes = Expression.NewArrayInit(convertType, valueVariable);
                 }
                 else
                 {
@@ -247,7 +247,7 @@ namespace LF2BitConverter.ExpressionGenerator
                 var objResult = Expression.Variable(convertType);
 
                 Expression toObject;
-                if (ConvertType == typeof(Byte))
+                if (convertType == typeof(Byte))
                 {
                     toObject = Expression.ArrayAccess(bytes, startIndex);
                 }

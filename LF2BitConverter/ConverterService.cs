@@ -12,20 +12,34 @@ namespace LF2BitConverter
             LittleEndian = littleEndian;
         }
 
-        public ConverterUnit<T> GetConverter<T>()
+        public GetBytesDelegate<T> GetGetBytes<T>()
         {
             var type = typeof(T);
-            if (!ConverterMap.ContainsKey(type))
+            if (!GetBytesMap.ContainsKey(type))
             {
                 var builder = BuilderManager.GetOrAddBuilder(type);
-                var converter = builder.Build(LittleEndian);
-                ConverterMap.TryAdd(type, converter.MakeGenericType<T>());
+                GetBytesMap.TryAdd(type, builder.BuildGetBytes(LittleEndian));
             }
-            return (ConverterUnit<T>)ConverterMap[type];
+            return (GetBytesDelegate<T>)GetBytesMap[type];
+        }
+
+        public ToObjectDelegate<T> GetToObject<T>()
+        {
+            var type = typeof(T);
+            if (!ToObjectMap.ContainsKey(type))
+            {
+                var builder = BuilderManager.GetOrAddBuilder(type);
+                ToObjectMap.TryAdd(type, builder.BuildToObject(LittleEndian));
+            }
+            return (ToObjectDelegate<T>)ToObjectMap[type];
         }
 
         private readonly static ConverterBuilderManager BuilderManager = new ConverterBuilderManager();
-        private readonly ConcurrentDictionary<Type, Object> ConverterMap = new ConcurrentDictionary<Type, Object>();
+        private readonly ConcurrentDictionary<Type, Delegate> GetBytesMap = new ConcurrentDictionary<Type, Delegate>();
+        private readonly ConcurrentDictionary<Type, Delegate> ToObjectMap = new ConcurrentDictionary<Type, Delegate>();
         private readonly Boolean LittleEndian;
     }
+
+    delegate Byte[] GetBytesDelegate<T>(T obj);
+    delegate T ToObjectDelegate<T>(Byte[] bytes, ref Int32 startIndex);
 }
