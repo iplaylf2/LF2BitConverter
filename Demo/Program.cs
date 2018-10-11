@@ -16,7 +16,15 @@ namespace Demo
             };
             var bytes = BitConverterEX.LittleEndian.GetBytes(person);
             var index = 0;
-            var obj = BitConverterEX.LittleEndian.ToObject<Person>(bytes, ref index);
+            var newPerson = BitConverterEX.LittleEndian.ToObject<Person>(bytes, ref index);
+
+            var mass = new Mass
+            {
+                people = new[] { person }
+            };
+            bytes = BitConverterEX.LittleEndian.GetBytes(mass);
+            index = 0;
+            var newMass = BitConverterEX.LittleEndian.ToObject<Mass>(bytes, ref index);
         }
     }
 }
