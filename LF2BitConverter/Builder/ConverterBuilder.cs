@@ -89,21 +89,29 @@ namespace LF2BitConverter.Builder
                                 return false;
                         }
                     }).ToArray();
+
             foreach (var member in validMembers)
             {
+                Type type;
                 switch (member)
                 {
                     case PropertyInfo property:
-                        Assistant.CheckCycle(property.PropertyType);
+                        type = property.PropertyType;
                         break;
                     case FieldInfo field:
-                        Assistant.CheckCycle(field.FieldType);
+                        type = field.FieldType;
                         break;
                     default:
-                        break;
+                        throw new Exception("不可能");
+                }
 
+                type = type.IsArray ? type.GetElementType() : type;
+                if (!(type.IsPrimitive || type.IsEnum))
+                {
+                    Assistant.CheckCycle(type);
                 }
             }
+
             return validMembers.Select(member => new ConvertMember(member, Assistant)).ToArray();
         }
 

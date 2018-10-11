@@ -33,6 +33,11 @@ namespace LF2BitConverter.ExpressionGenerator
 
         public Expression CreateGetBytes(Type convertType, Expression value, Boolean littleEndian)
         {
+            if (!(convertType.IsPrimitive || convertType.IsEnum))
+            {
+                Assistant.CheckCycle(convertType);
+            }
+
             if (value.Type.IsArray)
             {
                 var valueVariable = Expression.Variable(value.Type);
@@ -93,6 +98,11 @@ namespace LF2BitConverter.ExpressionGenerator
 
         public Expression CreateToObject(Type convertType, Type originType, ParameterExpression bytes, ParameterExpression startIndex, Boolean littleEndian, Func<Expression, Expression> loopController)
         {
+            if (!(convertType.IsPrimitive || convertType.IsEnum))
+            {
+                Assistant.CheckCycle(convertType);
+            }
+
             if (originType.IsArray)
             {
                 var elementType = originType.GetElementType();

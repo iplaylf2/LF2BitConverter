@@ -30,7 +30,7 @@ namespace LF2BitConverter.Builder
 
         public ConverterBuilder GetBuilder(Type convertType)
         {
-            return BuilderManager.GetAddBuilder(convertType);
+            return BuilderManager.GetBuilder(convertType);
         }
 
         private readonly ConverterBuilderManager BuilderManager;

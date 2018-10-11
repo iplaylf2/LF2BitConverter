@@ -24,7 +24,7 @@ namespace LF2BitConverter.Builder
             BuilderMap.TryAdd(convertType, new ConverterBuilder(convertType, assistant));
         }
 
-        public ConverterBuilder GetAddBuilder(Type convertType)
+        public ConverterBuilder GetBuilder(Type convertType)
         {
             return BuilderMap[convertType];
         }
