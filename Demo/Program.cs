@@ -1,6 +1,5 @@
 ﻿using System;
 using LF2BitConverter;
-using LF2BitConverter.ConvertMemberAttributeNS;
 
 namespace Demo
 {
@@ -8,23 +7,23 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            var person = new Person
+            Person person = new Person
             {
                 Age = 10,
                 Name = new Byte[] { 1, 3, 4, 5 },
                 Character = new[] { Character.幽默, Character.开朗 }
             };
-            var bytes = BitConverterEX.LittleEndian.GetBytes(person);
-            var index = 0;
-            var newPerson = BitConverterEX.LittleEndian.ToObject<Person>(bytes, ref index);
+            Byte[] bytes = BitConverterEX.LittleEndian.GetBytes(person);
+            Int32 index = 0;
+            Person newPerson = BitConverterEX.LittleEndian.ToObject<Person>(bytes, ref index);
 
-            var mass = new Mass
+            Mass mass = new Mass
             {
                 people = new[] { person }
             };
             bytes = BitConverterEX.LittleEndian.GetBytes(mass);
             index = 0;
-            var newMass = BitConverterEX.LittleEndian.ToObject<Mass>(bytes, ref index);
+            Mass newMass = BitConverterEX.LittleEndian.ToObject<Mass>(bytes, ref index);
         }
     }
 }
