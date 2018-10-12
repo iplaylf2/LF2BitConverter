@@ -1,6 +1,8 @@
 # LF2BitConverter
 System.BitConverter的扩展版。用于自定义对象与Byte[]互转。   
 
+## 用法
+
 接口简单，支持大小端转换。   
 
 ``` C#
@@ -78,5 +80,8 @@ class Bar
     public Foo[] FooArray;    
 }
 ```
+
+## 说明
+使用表达式树动态构造转换函数，性能与手写转换代码相当。   
 
 更多demo在demo目录。    
