@@ -1,5 +1,5 @@
 # LF2BitConverter
-System.BitConverter的扩展版。用于自定义对象与Byte[]互转。   
+System.BitConverter的扩展版，使用同样的编码格式。用于自定义对象与Byte[]互转。   
 
 ## 用法
 
