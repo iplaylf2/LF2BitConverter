@@ -90,34 +90,20 @@ namespace LF2BitConverter.Builder
                         }
                     }).ToArray();
 
-            foreach (var member in validMembers)
-            {
-                Type type;
-                switch (member)
-                {
-                    case PropertyInfo property:
-                        type = property.PropertyType;
-                        break;
-                    case FieldInfo field:
-                        type = field.FieldType;
-                        break;
-                    default:
-                        throw new Exception("不可能");
-                }
-
-                type = type.IsArray ? type.GetElementType() : type;
-                if (!(type.IsPrimitive || type.IsEnum))
-                {
-                    Assistant.CheckCycle(type);
-                }
-            }
-
             return validMembers.Select(member => new ConvertMember(member, Assistant)).ToArray();
         }
 
         private LambdaExpression CreateGetBytes(Boolean littleEndian)
         {
             var obj = Expression.Parameter(ConvertType);
+
+            if (ConvertMemberArray.Length == 0)
+            {
+                return Expression.Lambda(
+                    typeof(GetBytesDelegate<>).MakeGenericType(ConvertType),
+                    Expression.NewArrayInit(typeof(Byte)),
+                obj);
+            }
 
             var context = new GeneratorContext
             {
@@ -187,6 +173,14 @@ namespace LF2BitConverter.Builder
         {
             var bytes = Expression.Parameter(typeof(Byte[]));
             var startIndex = Expression.Parameter(typeof(Int32).MakeByRefType());
+
+            if (ConvertMemberArray.Length == 0)
+            {
+                return Expression.Lambda(
+                    typeof(ToObjectDelegate<>).MakeGenericType(ConvertType),
+                    Expression.Default(ConvertType),
+                bytes, startIndex);
+            }
 
             var context = new GeneratorContext
             {
