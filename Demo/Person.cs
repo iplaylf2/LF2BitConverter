@@ -18,8 +18,8 @@ namespace Demo
         /// 不定长度的数组需要指定存放长度的字段
         /// CountBy.Byte是计算字段转换为Bytes时的长度
         /// </summary>
-        [ConvertArray(CountBy.Byte, LengthFrom = nameof(NameLength))]
-        public Byte[] Name { get; set; }
+        [ConvertString("utf-8", nameof(NameLength))]
+        public String Name { get; set; }
 
         /// <summary>
         /// 允许多个转换特性同时使用

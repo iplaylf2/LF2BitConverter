@@ -10,7 +10,7 @@ namespace Demo
             Person person = new Person
             {
                 Age = 10,
-                Name = new Byte[] { 1, 3, 4, 5 },
+                Name = "小明",
                 Character = new[] { Character.幽默, Character.开朗 }
             };
             Byte[] bytes = BitConverterEX.LittleEndian.GetBytes(person);
