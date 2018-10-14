@@ -16,6 +16,6 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             return ConvertType;
         }
 
-        private Type ConvertType;
+        private readonly Type ConvertType;
     }
 }

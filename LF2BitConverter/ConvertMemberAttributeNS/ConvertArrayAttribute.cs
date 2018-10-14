@@ -10,7 +10,6 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
 {
     public class ConvertArrayAttribute : ConvertMemberAttribute
     {
-        public CountBy CountBy { get; }
         public String LengthFrom { get; set; }
         public Int32 Length { get; set; }
 
@@ -146,6 +145,7 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             }
         }
 
+        private readonly CountBy CountBy;
         private readonly String ItemCountInGetBytes = new Guid().ToString();
 
     }
