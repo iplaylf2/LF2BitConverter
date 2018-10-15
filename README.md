@@ -81,6 +81,42 @@ class Bar
 }
 ```
 
+## 扩展
+
+扩展方便，派生ConvertMemberAttribute后重写公共方法实现扩展。
+
+``` C#
+//派生ConvertAsAttribute，指定成员数值在转换时的类型。
+class ConvertAsAttribute : ConvertMemberAttribute
+{
+    public ConvertAsAttribute(Type type)
+    {
+        ConvertType = type;
+    }
+    
+    public override Type OnGetConvertType(Type lastResult)
+    {
+        return ConvertType;
+    }
+
+    private readonly Type ConvertType;
+}
+
+enum Foo
+{
+    A,B,C
+}
+
+class Bar
+{
+    //枚举类型在转换时会被当作是Byte类型
+    [ConvertAs(typeof(Byte))]
+    public Foo Foo;
+}
+```
+
+本库内置的转换数组ConvertArrayAttribute，转换字符串ConvertStringAttribute等皆通过派生ConvertMemberAttribute实现。
+
 ## 说明
 使用表达式树动态构造转换函数，性能与手写转换代码相当。   
 
