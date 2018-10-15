@@ -37,7 +37,6 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
 
         public override void AfterCreateGetBytes(GeneratorContext context)
         {
-            var littleEndian = Member.GetLittleEndian(context.LittleEndian);
             if (!String.IsNullOrEmpty(LengthFrom))
             {
                 Expression length;
@@ -63,6 +62,10 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
 
                 var lengthIndex = context.MemberResult.FindIndex(item => item.Item1 == LengthFrom);
                 var lengthMember = context.MemberArray.Single(member => member.Name == LengthFrom);
+
+                var littleEndian = context.MemberArray.Single(member => member.Name == LengthFrom)
+                    .GetLittleEndian(context.LittleEndian);
+
                 context.MemberResult[lengthIndex] = (
                     LengthFrom,
                     Member.CreateGetBytes(lengthMember.ConvertType, length, littleEndian)
