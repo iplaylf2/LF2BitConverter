@@ -41,6 +41,17 @@ namespace LF2BitConverter.ExpressionGenerator
             if (value.Type.IsArray)
             {
                 var valueVariable = Expression.Variable(value.Type);
+                if (convertType == typeof(Byte) && value.Type == typeof(Byte[]))
+                {
+                    return Expression.Block(
+                        new[] { valueVariable },
+                        new Expression[]
+                        {
+                            Expression.Assign(valueVariable,value),
+                            valueVariable
+                        });
+                }
+
                 if (convertType.IsPrimitive)
                 {
                     var bytesResult = Expression.Variable(typeof(Byte[]));
