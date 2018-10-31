@@ -182,11 +182,11 @@ namespace LF2BitConverter.ExpressionGenerator
             return bytesResult;
         }
 
-        internal void AfterCreateGetBytes(GeneratorContext context)
+        internal void AfterAllCreateGetBytes(GeneratorContext context)
         {
             foreach (var attribute in ConvertMemberAttributeArray)
             {
-                attribute.AfterCreateGetBytes(context);
+                attribute.AfterAllCreateGetBytes(context);
             }
         }
 
@@ -201,11 +201,11 @@ namespace LF2BitConverter.ExpressionGenerator
             return ConvertMemberAttributeArray.Aggregate(obj, (result, attribute) => attribute.OnCreateToObject(bytes, startIndex, context, result));
         }
 
-        internal void AfterToObject(GeneratorContext context)
+        internal void AfterAllCreateToObject(GeneratorContext context)
         {
             foreach (var attribute in ConvertMemberAttributeArray)
             {
-                attribute.AfterToObject(context);
+                attribute.AfterAllCreateToObject(context);
             }
         }
 

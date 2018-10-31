@@ -35,7 +35,7 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             return lastResult;
         }
 
-        public override void AfterCreateGetBytes(GeneratorContext context)
+        public override void AfterAllCreateGetBytes(GeneratorContext context)
         {
             if (!String.IsNullOrEmpty(LengthFrom))
             {

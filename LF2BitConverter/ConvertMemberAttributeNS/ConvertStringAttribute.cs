@@ -24,7 +24,7 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
                 Expression.PropertyOrField(obj, Member.Name));
         }
 
-        public override void AfterCreateGetBytes(GeneratorContext context)
+        public override void AfterAllCreateGetBytes(GeneratorContext context)
         {
             var myIndex = context.MemberResult.FindIndex(item => item.Item1 == Member.Name);
 

@@ -7,13 +7,13 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
 {
     public class ConvertIgnoreAttribute : ConvertMemberAttribute
     {
-        public override void AfterCreateGetBytes(GeneratorContext context)
+        public override void AfterAllCreateGetBytes(GeneratorContext context)
         {
             var assgin = context.MemberResult.Find(item => item.Item1 == Member.Name);
             context.MemberResult.Remove(assgin);
         }
 
-        public override void AfterToObject(GeneratorContext context)
+        public override void AfterAllCreateToObject(GeneratorContext context)
         {
             var assgin = context.MemberResult.Find(item => item.Item1 == Member.Name);
             context.MemberResult.Remove(assgin);
