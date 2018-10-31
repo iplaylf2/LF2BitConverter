@@ -9,13 +9,6 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
     {
         public ConvertAsAttribute(Type type)
         {
-            ConvertType = type;
         }
-        public override Type OnGetConvertType(Type lastResult)
-        {
-            return ConvertType;
-        }
-
-        private readonly Type ConvertType;
     }
 }

@@ -25,7 +25,7 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             return lastResult;
         }
 
-        public virtual void AfterCreateGetBytes(GeneratorContext context)
+        public virtual void AfterAllCreateGetBytes(GeneratorContext context)
         {
         }
 
@@ -39,7 +39,7 @@ namespace LF2BitConverter.ConvertMemberAttributeNS
             return lastResult;
         }
 
-        public virtual void AfterToObject(GeneratorContext context)
+        public virtual void AfterAllCreateToObject(GeneratorContext context)
         {
         }
 

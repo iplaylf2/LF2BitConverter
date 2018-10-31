@@ -122,7 +122,7 @@ namespace LF2BitConverter.Builder
 
             foreach (var member in ConvertMemberArray)
             {
-                member.AfterCreateGetBytes(context);
+                member.AfterAllCreateGetBytes(context);
             }
 
             var bytesResult = Expression.Variable(typeof(Byte[]));
@@ -199,7 +199,7 @@ namespace LF2BitConverter.Builder
 
             foreach (var member in ConvertMemberArray)
             {
-                member.AfterToObject(context);
+                member.AfterAllCreateToObject(context);
             }
 
             var objectResult = Expression.Variable(ConvertType);

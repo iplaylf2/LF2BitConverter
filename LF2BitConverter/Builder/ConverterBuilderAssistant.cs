@@ -12,7 +12,7 @@ namespace LF2BitConverter.Builder
             BuilderManager = builderManager;
         }
 
-        public void CheckCycle(Type convertType)
+        public ConverterBuilder GetOrAddBuilder(Type convertType)
         {
             if (!BuilderManager.ContainsBuilder(convertType))
             {
@@ -26,10 +26,6 @@ namespace LF2BitConverter.Builder
                     BuilderManager.AddBuilder(convertType, this);
                 }
             }
-        }
-
-        public ConverterBuilder GetBuilder(Type convertType)
-        {
             return BuilderManager.GetBuilder(convertType);
         }
 
